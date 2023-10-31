@@ -10,49 +10,55 @@ class VideoScreen extends StatefulWidget {
 }
 
 class _VideoScreenState extends State<VideoScreen> {
-  late VideoPlayerController controller;
+  // late VideoPlayerController controller;
+
+  VideoPlayerController? controller;
+
+  // void initController() async {
+  //   controller = VideoPlayerController.networkUrl(
+  //     Uri.parse(widget.url),
+  //     videoPlayerOptions: VideoPlayerOptions(),
+  //   );
+  //   await controller.initialize();
+  //
+  //   controller.play();
+  // }
 
   void initController() async {
-    controller = VideoPlayerController.networkUrl(
+    final controllerNew = VideoPlayerController.networkUrl(
       Uri.parse(widget.url),
       videoPlayerOptions: VideoPlayerOptions(),
     );
-    await controller.initialize();
-    controller.play();
-  }
 
-  Future<void> _onControllerChange() async {
-    if (controller == null) {
-      // If there was no controller, just create a new one
-      initController();
-    } else {
-      // If there was a controller, we need to dispose of the old one first
-      final oldController = controller;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await oldController.dispose();
-
-        // Initiating new controller
-        initController();
-      });
-
-      // Making sure that controller is not used by setting it to null
-      setState(() {
-       // controller = null;
-      });
+    final old = controller;
+    controller = controllerNew;
+    if (old != null) {
+      old.pause();
+      debugPrint("---- old controller paused.");
     }
+
+    debugPrint("---- controller changed.");
+    setState(() {});
+
+    controller!.initialize().then((_) {
+      debugPrint("---- new controller initialized");
+      old?.pause();
+      debugPrint("---- old controller paused");
+      controller!.play();
+      setState(() {});
+    });
   }
 
   @override
   void initState() {
     initController();
-  //  _onControllerChange();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    controller.pause();
+    controller!.pause();
 
     super.dispose();
   }
@@ -62,24 +68,24 @@ class _VideoScreenState extends State<VideoScreen> {
     return Scaffold(
       body: Center(
         child: SizedBox(
-            width: MediaQuery.of(context).size.width ,
+            width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height / 2,
             child: Stack(
               children: [
                 AspectRatio(
-                  aspectRatio: controller.value.aspectRatio,
-                  child: VideoPlayer(controller),
+                  aspectRatio: controller!.value.aspectRatio,
+                  child: VideoPlayer(controller!),
                 ),
                 GestureDetector(
                     onTap: () {
                       setState(() {
-                        controller.value.isPlaying
-                            ? controller.pause()
-                            : controller.play();
+                        controller!.value.isPlaying
+                            ? controller!.pause()
+                            : controller!.play();
                       });
                     },
                     child: Icon(
-                      controller.value.isPlaying
+                      controller!.value.isPlaying
                           ? Icons.pause
                           : Icons.play_arrow,
                       color: Colors.black,

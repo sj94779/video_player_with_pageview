@@ -15,6 +15,7 @@ class _PageViewDemoState extends State<PageViewDemo> {
   int _activePage = 0;
 
   final List<String> _pages = [
+
     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
     'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
@@ -55,6 +56,11 @@ class _PageViewDemoState extends State<PageViewDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(leading: GestureDetector(
+          onTap: (){
+            Navigator.pop(context);
+          },
+          child: const Icon(Icons.arrow_back,)),),
       body: Stack(
         children: [
           PageView.builder(
