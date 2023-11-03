@@ -59,7 +59,7 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void dispose() {
     controller!.pause();
-
+    controller?.dispose();
     super.dispose();
   }
 
